@@ -26,7 +26,19 @@
                     訪問修飾符 返回值 包名.包名....類名.方法名(參數列表)
                標準表達式寫法:
                     public void com.it.service.impl.AccountServiceImpl.saveAccount()
-
+               訪問修飾符可以通配
+               返回值可以通配
+               包名可以使用通配符 表示任意包 但是有幾級包 就需要寫幾個*.
+               包名可以使用..表示當前包及其子包
+               參數列表
+                    基本數據類型直接寫名稱 int
+                    引用類型寫包名.類名  java.lang.String
+                    可以用通配符表示一個以上的參數
+                    參數列表可以用..表示通配(任意數量 包含沒有)
+               全通配寫法:
+                    * *..*.*(..)
+                實際開發中切入點表達式的通常寫法:
+                    切到業務層實現類的所有方法
     -->
     <!-- 配置logger類 -->
     <bean id="logger" class="com.it.utils.Logger"></bean>
@@ -36,7 +48,9 @@
         <!-- 配置切面 -->
          <aop:aspect id="logAdvice" ref="logger">
              <!-- 配置通知的類型 且建立通知方法和切入點方法的關聯 -->
-             <aop:before method="printLog" pointcut="execution(public void com.it.service.impl.AccountServiceImpl.saveAccount())"></aop:before>
+             <aop:before method="printLog" pointcut="execution(* com.it.service.*.*(..))"></aop:before>
+<!--             <aop:before method="printLog" pointcut="execution(public void com.it.service.impl.AccountServiceImpl.saveAccount())"></aop:before>-->
+<!--             <aop:before method="printLog" pointcut="execution(* *..*.*(..))"></aop:before>-->
          </aop:aspect>
     </aop:config>
 </beans>
