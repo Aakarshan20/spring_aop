@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        https://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/aop
+        https://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!--配置spring IOC 配置Service對象 -->
+    <bean id="accountService" class="com.it.service.impl.AccountServiceImpl"></bean>
+    <!-- spring 基於XML IOC配置
+        1.把通知的bean也交給spring管理
+        2.使用aop:config標籤表明開始AOP的配置
+        3.使用api:aspect標籤表明配置切面
+            id: 給切面提供一個為一標誌
+            ref: 指定通知類bean的id
+        4.在aop:aspect標籤的內部使用對應的標籤來配置通知的類型
+            現在的事例是讓printLog方法在切入點方法執行之前執行(前置通知)
+            aop:before
+               method:用於指定Logger類中哪個方法是前置通知
+               pointcut:用於指定切入點表達式 該表達式的含義是指對業務層中哪些方法增強
+
+            切入點表達式的寫法:
+               關鍵字: execution(表達式)
+               表達式:
+                    訪問修飾符 返回值 包名.包名....類名.方法名(參數列表)
+               標準表達式寫法:
+                    public void com.it.service.impl.AccountServiceImpl.saveAccount()
+               訪問修飾符可以通配
+               返回值可以通配
+               包名可以使用通配符 表示任意包 但是有幾級包 就需要寫幾個*.
+               包名可以使用..表示當前包及其子包
+               參數列表
+                    基本數據類型直接寫名稱 int
+                    引用類型寫包名.類名  java.lang.String
+                    可以用通配符表示一個以上的參數
+                    參數列表可以用..表示通配(任意數量 包含沒有)
+               全通配寫法:
+                    * *..*.*(..)
+                實際開發中切入點表達式的通常寫法:
+                    切到業務層實現類的所有方法
+    -->
+    <!-- 配置logger類 -->
+    <bean id="logger" class="com.it.utils.Logger"></bean>
+
+    <!--  配置AOP -->
+    <aop:config>
+        <!-- 配置切面 -->
+         <aop:aspect id="logAdvice" ref="logger">
+             <!-- 配置通知的類型 且建立通知方法和切入點方法的關聯 -->
+             <aop:before method="printLog" pointcut="execution(* com.it.service.*.*(..))"></aop:before>
+<!--             <aop:before method="printLog" pointcut="execution(public void com.it.service.impl.AccountServiceImpl.saveAccount())"></aop:before>-->
+<!--             <aop:before method="printLog" pointcut="execution(* *..*.*(..))"></aop:before>-->
+         </aop:aspect>
+    </aop:config>
+</beans>
